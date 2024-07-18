@@ -13,6 +13,27 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 // http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
+app.get("/api/:date?", function(req, res){
+  let time = req.params.date? req.params.date: new Date();
+  let milis =  new Date(time);
+
+  if (/^\d+$/.test(time)) {
+    milis = new Date(parseInt(time));
+  } else {
+    milis = new Date(time);
+  }
+
+  if (isNaN(milis.getTime())){
+    return res.json({ error: "Invalid Date" })
+  }
+
+  let unixMs = milis.getTime();
+  let utc = milis.toUTCString();
+
+
+  res.json({ unix: unixMs , utc: utc })
+});
+
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
